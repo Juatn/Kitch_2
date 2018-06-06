@@ -20,6 +20,7 @@ public class Receta {
     private HashMap<String,Comentario>comentarios;
     private ArrayList<Float>valoraciones;
     private String id;
+    private String email_usuario;
 
 
    public Receta(String img, String nombre, String categoria, String elaboracion, String ingredientes, String creador_receta,String id){
@@ -35,17 +36,15 @@ public class Receta {
        valoraciones=new ArrayList<Float>();
        comentarios= new HashMap<>();
 
-       Comentario nuevo = new Comentario();
-       nuevo.setNombre_usuario("Perico");
-       nuevo.setF_nota_receta(3);
-       nuevo.setS_mensaje("melaco");
-       comentarios.put("uno",nuevo);
 
    }
     public Receta(){
 
         valoraciones=new ArrayList<Float>();
-        comentarios= new HashMap<>();
+        comentarios= new HashMap<String, Comentario>();
+
+        valoraciones.add(4f);
+
 
     }
 
@@ -151,5 +150,13 @@ public class Receta {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getEmail_usuario() {
+        return email_usuario;
+    }
+
+    public void setEmail_usuario(String email_usuario) {
+        this.email_usuario = email_usuario;
     }
 }

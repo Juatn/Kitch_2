@@ -2,13 +2,17 @@ package moreno.juan.kitch.controlador;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import moreno.juan.kitch.R;
@@ -20,16 +24,21 @@ public class RecyclerViewComentarios  extends RecyclerView.Adapter<RecyclerViewC
 
 
     public static List<Comentario> comentarios;
-    public RecyclerViewComentarios(List<Comentario> coment){
+    public RecyclerViewComentarios(Receta receta){
 
-        this.comentarios=coment;
+        this.comentarios=new ArrayList<>();
+
+        this.comentarios.addAll(receta.getComentarios().values());
 
     }
 
     @NonNull
     @Override
     public RecyclerViewComentarios.ViewMensaje onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.item_comentario,parent,false);
+        RecyclerViewComentarios.ViewMensaje holder= new ViewMensaje(view);
+
+        return holder;
     }
 
     @Override

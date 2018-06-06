@@ -15,15 +15,24 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 import com.squareup.picasso.Picasso;
 
@@ -38,6 +47,7 @@ import moreno.juan.kitch.controlador.Utils;
 import moreno.juan.kitch.modelo.Comentario;
 import moreno.juan.kitch.modelo.Receta;
 
+import static android.widget.Toast.LENGTH_LONG;
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 import static moreno.juan.kitch.controlador.Utils.recetas;
 
@@ -51,7 +61,7 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
     private TextView ingredientes_receta;
     private TextView categoria_receta;
     private EditText escribir_nuevo_comentario;
-    public static List<Comentario> listComentarios=new ArrayList<Comentario>();
+    public static List<Comentario> listComentarios;
     public static Receta receta_visualizada;
     private RatingBar puntuacion_receta_comentario;
     private Button btn_enviar_comentario;
@@ -59,7 +69,8 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
     LinearLayoutManager mLayoutManager;
     private RecyclerView recycler_comentarios;
     private RecyclerViewComentarios adaptador_comentarios;
-    Task<DocumentReference>messageRef;
+    Task<Void> messageRef;
+    private DocumentReference mDatabaseRef;
     FirebaseFirestore db;
 
     WriteBatch batch;
@@ -84,6 +95,8 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
         puntuacion_receta_comentario=(RatingBar)findViewById(R.id.rating_puntuacion_nuevareceta);
         btn_enviar_comentario=(Button)findViewById(R.id.btn_enviar_comentario);
 
+
+
         db = FirebaseFirestore.getInstance();
         batch=db.batch();
         auth= FirebaseAuth.getInstance();
@@ -106,7 +119,7 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
         recycler_comentarios.setItemAnimator(new DefaultItemAnimator());
         recycler_comentarios.setLayoutManager(mLayoutManager);
 
-        adaptador_comentarios = new RecyclerViewComentarios(listComentarios);
+        adaptador_comentarios = new RecyclerViewComentarios(receta_visualizada);
         recycler_comentarios.setAdapter(adaptador_comentarios);
 
 
@@ -119,7 +132,7 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            listComentarios.removeAll(listComentarios);
+                            //listComentarios.removeAll(listComentarios);
                             for (DocumentSnapshot document : task.getResult()) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
 
@@ -174,21 +187,40 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
             mensaje.setF_nota_receta(puntuacion_receta_comentario.getRating());
             mensaje.setS_mensaje(escribir_nuevo_comentario.getText().toString());
 
-            // Get a new write batch
+            HashMap<String,Object>coment=new HashMap<>();
 
-               messageRef = db
-                    .collection(Utils.FIREBASE_BDD_RECETAS).document(receta_visualizada.getId().toString()).collection(Utils.FIREBASE_BDD_COMENTARIOS).add(mensaje);
+            coment.put("comentarios",mensaje);
+
+            // Get a new write batch
+            mDatabaseRef= db.collection("recetas").document(receta_visualizada.getId());
+
+            mDatabaseRef.update("comentarios",receta_visualizada.getComentarios().values()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()){
+                        crearToast("Mensaje enviado");
+
+                    }
+                    else{
+                        crearToast("Algo salio mal...");
+
+                    }
+                }
+            });
 
 
         }
 
     }
+    public void crearToast(String mensaje){
+
+        Toast.makeText(getApplicationContext(),mensaje,Toast.LENGTH_LONG).show();
+    }
 
 
     public void cargarReceta(){
 
-
-            // puntuacion de la receta
+           // puntuacion de la receta
         if(receta_visualizada.getPuntuacion()!=0)
             puntuacion_receta.setRating(receta_visualizada.getPuntuacion());
             //nombre de la receta
@@ -203,8 +235,30 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
             // ponemos la foto
            Picasso.get().load(receta_visualizada.getImg()).into(foto_receta_vista);
 
+    }
+
+    private Task<Void> addMensaje(final DocumentReference restaurantRef, final Comentario mensaje) {
+        // Create reference for new rating, for use inside the transaction
+        final DocumentReference ratingRef = restaurantRef.collection(Utils.FIREBASE_BDD_COMENTARIOS).document();
+
+        // In a transaction, add the new rating and update the aggregate totals
+        return db.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                Receta receta = transaction.get(restaurantRef).toObject(Receta.class);
 
 
 
+                // Update restaurant
+                transaction.set(restaurantRef, receta);
+
+                // Update rating
+                Map<String, Object> data = new HashMap<>();
+                data.put("comentarios", mensaje);
+                transaction.set(ratingRef, data, SetOptions.merge());
+
+                return null;
+            }
+        });
     }
 }

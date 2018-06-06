@@ -173,17 +173,18 @@ public class CrearReceta extends AppCompatActivity implements View.OnClickListen
                            upload.setCreador_receta(auth.getCurrentUser().getDisplayName());
                            upload.setS_elaboracion(txt_elaboracion.getText().toString());
                            upload.setImg(taskSnapshot.getDownloadUrl().toString());
-                            HashMap<String,Comentario>comentarios_receta=new HashMap<>();
-                            ArrayList<Float>valoraciones_receta=new ArrayList<Float>();
-
-                           upload.setValoraciones(valoraciones_receta);
                            upload.setS_categoria(spinner_categorias.getSelectedItem().toString());
+                           upload.setEmail_usuario(auth.getCurrentUser().getEmail().toString());
 
                                // se le genera una id unica
                             //String uploadId = mDatabaseRef.push().getKey();
                             //mDatabaseRef.getKey();
                             upload.setId(mDatabaseRef.push().getKey());
-                            upload.setComentarios(comentarios_receta);
+                            Comentario nuevo = new Comentario();
+                            nuevo.setNombre_usuario("Perico");
+                            nuevo.setF_nota_receta(4f);
+                            nuevo.setS_mensaje("melaco");
+                            upload.getComentarios().put(mDatabaseRef.push().getKey(),nuevo);
                             // se añade a firebase
                             db.collection(Utils.FIREBASE_BDD_RECETAS)
                                     .add(upload)

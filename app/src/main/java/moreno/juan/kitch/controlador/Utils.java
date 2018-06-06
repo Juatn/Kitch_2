@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import moreno.juan.kitch.modelo.Receta;
 import moreno.juan.kitch.modelo.Usuario;
@@ -18,9 +19,19 @@ public class Utils {
     public static ArrayList<Receta>recetas =new ArrayList<Receta>();
     public static final String FIREBASE_BDD_RECETAS="recetas";
     public static final String FIREBASE_BDD_COMENTARIOS="comentarios";
+    public static ArrayList<Receta> bebidas=new ArrayList<>();
+    public static ArrayList<Receta> carnes=new ArrayList<>();
+    public static ArrayList<Receta> ensaladas=new ArrayList<>();
+    public static ArrayList<Receta> mariscos=new ArrayList<>();
+    public static ArrayList<Receta> legumbres_y_cereales =new ArrayList<>();
+    public static ArrayList<Receta> pasta =new ArrayList<>();
+    public static ArrayList<Receta> pan_y_pizzas=new ArrayList<>();
+    public static ArrayList<Receta> frutas_verduras=new ArrayList<>();
+    public static ArrayList<Receta> sopas_cremas=new ArrayList<>();
+
 
     public static String[] categorias={"Bebidas","Carnes","Ensaladas","Mariscos",
-            "Legumbres y Cereales","Guarniciones","Pan y Pizzas", "Frutas y Verduras","Sopas y Cremas"
+            "Legumbres y Cereales","Pan y Pizzas", "Frutas y Verduras","Sopas y Cremas"
     ,"Pasta"};
 
     public static  String getImageData(Bitmap bmp) {
@@ -47,5 +58,45 @@ public class Utils {
             e.getMessage();
             return null;
         }
+    }
+
+    public static void organizarCategorias(List<Receta> recetas){
+
+
+        for(Receta c:recetas){
+
+
+            if(c.getS_categoria().toUpperCase().equals("BEBIDAS")){
+                bebidas.add(c);
+            }
+            else if(c.getS_categoria().toUpperCase().equals("CARNES")){
+                carnes.add(c);
+            }
+            else if(c.getS_categoria().toUpperCase().equals("ENSALADAS")){
+                ensaladas.add(c);
+            }
+            else if(c.getS_categoria().toUpperCase().equals("MARISCOS")){
+                mariscos.add(c);
+            }
+            else if(c.getS_categoria().toUpperCase().equals("LEGUMBRES Y CEREABLES")){
+                legumbres_y_cereales.add(c);
+            }
+            else if(c.getS_categoria().toUpperCase().equals("PAN Y PIZZAS")){
+                pan_y_pizzas.add(c);
+            }
+            else if(c.getS_categoria().toUpperCase().equals("FRUTAS Y VERDURAS")){
+                frutas_verduras.add(c);
+            }
+            else if(c.getS_categoria().toUpperCase().equals("SOPAS Y CREMAS")){
+                sopas_cremas.add(c);
+            }
+            else if(c.getS_categoria().toUpperCase().equals("PASTA")){
+                pasta.add(c);
+            }
+
+
+        }
+
+
     }
 }

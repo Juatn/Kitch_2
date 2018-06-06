@@ -61,6 +61,9 @@ public class ToolsFragment extends Fragment {
         password =(EditText) view.findViewById(R.id.editText_password_ususario_ajustes);
         img_usuario =(ImageView) view.findViewById(R.id.imagen_perfil_ajustes);
         btn_guardar_ajustes =(Button)view.findViewById(R.id.btn_guardar_ajustes);
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        cargarVistaAjustes();
+
 
         img_usuario.getRootView().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,6 +91,10 @@ public class ToolsFragment extends Fragment {
                                     if (task.isSuccessful()) {
                                         Toast.makeText(view.getContext(), "Perfil Actualizado", Toast.LENGTH_SHORT).show();
 
+                                        Intent intent = new Intent(view.getContext().getApplicationContext(), Drawler.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        startActivity(intent);
+
 
 
 
@@ -100,14 +107,10 @@ public class ToolsFragment extends Fragment {
                                 }
                             });
                 }
-                Intent intent = new Intent(view.getContext().getApplicationContext(), Drawler.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+
             }
         });
 
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        cargarVistaAjustes();
         return view;
     }
     public void cargarVistaAjustes() {

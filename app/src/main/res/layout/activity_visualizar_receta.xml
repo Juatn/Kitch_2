@@ -248,6 +248,9 @@
                     android:id="@+id/recicler_comentarios"
                     android:layout_width="380dp"
                     android:layout_height="485dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
                     tools:layout_editor_absoluteX="16dp"
                     tools:layout_editor_absoluteY="928dp">
 
