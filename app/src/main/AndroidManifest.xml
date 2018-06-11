@@ -22,12 +22,14 @@
         <activity android:name=".SignUpActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".MenuActivity" />
+
         <activity
             android:name=".Drawler"
             android:label="@string/title_activity_drawler"
             android:theme="@style/AppTheme" />
         <activity android:name=".CrearReceta" />
         <activity android:name=".VisualizarReceta"></activity>
+
     </application>
 
 </manifest>

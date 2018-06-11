@@ -30,9 +30,8 @@ public class Utils {
     public static ArrayList<Receta> sopas_cremas=new ArrayList<>();
 
 
-    public static String[] categorias={"Bebidas","Carnes","Ensaladas","Mariscos",
-            "Legumbres y Cereales","Pan y Pizzas", "Frutas y Verduras","Sopas y Cremas"
-    ,"Pasta"};
+    public static String[] categorias={"Bebidas","Carnes","Ensaladas","Pescado y mariscos","Arroces y Pasta","Postres"
+    };
 
     public static  String getImageData(Bitmap bmp) {
 

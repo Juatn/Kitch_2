@@ -36,7 +36,7 @@ import moreno.juan.kitch.R;
 import static android.app.Activity.RESULT_OK;
 
 
-public class ToolsFragment extends Fragment {
+public class MiPerfilFragment extends Fragment {
     public static final int CHOOSE_IMAGE = 101;
     private EditText text_nombre_usuario;
     private EditText text_email_usuario;

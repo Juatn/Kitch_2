@@ -68,7 +68,7 @@ public class ProfileActivity extends AppCompatActivity {
         imageView = (ImageView) findViewById(R.id.imageView);
         progressBar = (ProgressBar) findViewById(R.id.progressbar);
 
-        insertBDD();
+
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#dabc50"
     android:paddingLeft="10dp"
     android:paddingRight="10dp">
 
@@ -17,10 +18,12 @@
         tools:context="moreno.juan.kitch.CrearReceta">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar_crear_receta"
+            android:id="@+id/toolbar2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary" />
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme" />
 
         <EditText
             android:id="@+id/txtnombre_receta"
@@ -83,7 +86,7 @@
             android:layout_height="100dp"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
-            android:background="#FFD8EEAE"
+            android:background="@color/red_press"
             android:ems="10"
             android:gravity="left|top"
             android:inputType="textMultiLine" />
@@ -103,7 +106,7 @@
             android:layout_height="200dp"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
-            android:background="#FFD8EEAE"
+            android:background="@color/red_press"
             android:ems="10"
             android:gravity="left|top"
             android:inputType="textMultiLine" />
@@ -125,7 +128,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
-            android:background="@android:drawable/btn_dropdown"
+            android:background="@color/red_btn_bg_pressed_color"
             android:spinnerMode="dropdown" />
 
 

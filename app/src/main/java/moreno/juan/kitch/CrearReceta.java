@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import moreno.juan.kitch.controlador.RecyclerViewAdaptor;
 import moreno.juan.kitch.controlador.Utils;
 import moreno.juan.kitch.fragments.Tab_RecetasFragment;
@@ -101,7 +102,7 @@ public class CrearReceta extends AppCompatActivity implements View.OnClickListen
             @Override
             public void onClick(View v) {
                 if (mUploadTask != null && mUploadTask.isInProgress()) {
-                    Toast.makeText(CrearReceta.this, "Upload in progress", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CrearReceta.this, "En proceso...", Toast.LENGTH_SHORT).show();
                 } else {
                     uploadFile();
                 }
@@ -165,7 +166,7 @@ public class CrearReceta extends AppCompatActivity implements View.OnClickListen
                                 }
                             }, 500);
 
-                            Toast.makeText(CrearReceta.this, "Receta creada con exito", Toast.LENGTH_LONG).show();
+                           mostrarMensaje("Receta creada con exito").show();
                             // Se crea una instancia de la clase receta
                            Receta upload = new Receta();
                            upload.setS_nombre(txt_nombre_receta.getText().toString());
@@ -183,14 +184,17 @@ public class CrearReceta extends AppCompatActivity implements View.OnClickListen
                             Comentario nuevo = new Comentario();
                             nuevo.setNombre_usuario("Perico");
                             nuevo.setF_nota_receta(4f);
-                            nuevo.setS_mensaje("melaco");
-                            upload.getComentarios().put(mDatabaseRef.push().getKey(),nuevo);
+                            nuevo.setS_mensaje("Tiene buena pinta, melaco");
+                            for(int i=0;i<10;i++)
+                            upload.getComentarios().add(nuevo);
                             // se añade a firebase
                             db.collection(Utils.FIREBASE_BDD_RECETAS)
                                     .add(upload)
                                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                         @Override
                                         public void onSuccess(DocumentReference documentReference) {
+                                            // Actualizamos el id de la clase receta con el del documento generado
+                                            documentReference.update("id",documentReference.getId());
 
                                         }
                                     })
@@ -216,7 +220,7 @@ public class CrearReceta extends AppCompatActivity implements View.OnClickListen
                         }
                     });
         } else {
-            Toast.makeText(this, "Ningun archivo seleccionado", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Sube una foto para la receta", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -247,6 +251,22 @@ public class CrearReceta extends AppCompatActivity implements View.OnClickListen
        return centinela;
 
 
+    }
+    public SweetAlertDialog mostrarMensaje(String mensaje){
+
+        SweetAlertDialog nuevo= new SweetAlertDialog(this,SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText(mensaje);
+        return  nuevo;
+
+    }
+    public SweetAlertDialog warningMensaje(String titulo, String contexto, String texto_confirmacion){
+
+        SweetAlertDialog nuevo=new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText(titulo)
+                .setContentText(contexto)
+                .setConfirmText(texto_confirmacion);
+
+        return  nuevo;
     }
 
 }

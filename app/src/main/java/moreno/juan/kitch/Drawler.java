@@ -18,17 +18,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import moreno.juan.kitch.fragments.GalleryFragment;
-import moreno.juan.kitch.fragments.ImportFragment;
-import moreno.juan.kitch.fragments.SlideshowFragment;
+import moreno.juan.kitch.fragments.CestaCompraFragment;
+import moreno.juan.kitch.fragments.MisRecetasFragment;
+import moreno.juan.kitch.fragments.MiPerfilFragment;
 import moreno.juan.kitch.fragments.Tab_RecetasFragment;
-import moreno.juan.kitch.fragments.ToolsFragment;
 
 public class Drawler extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -42,6 +42,7 @@ public class Drawler extends AppCompatActivity
     private Uri uriImg;
     FirebaseUser user;
     public static boolean centinela;
+    private FragmentManager fragmentManager;
 
 
 
@@ -81,12 +82,14 @@ public class Drawler extends AppCompatActivity
 
 
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager = getSupportFragmentManager();
 
-        fragmentManager.beginTransaction().replace(R.id.contenedor, new Tab_RecetasFragment()).commit();
+
+        fragmentManager.beginTransaction().replace(R.id.contenedor, new GalleryFragment()).commit();
         user = FirebaseAuth.getInstance().getCurrentUser();
 
-        Toast.makeText(this,"Sesión iniciada como "+ user.getDisplayName().toString(),Toast.LENGTH_LONG).show();
+       //mostrarMensaje("Bienvenido de nuevo "+user.getDisplayName()).show();
+
 
     }
 
@@ -117,7 +120,12 @@ public class Drawler extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            //cerramos sesion
+            FirebaseAuth.getInstance().signOut();
+            finish();
+            //iniciamos ventana login
+            startActivity(new Intent(this, MainActivity.class));
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -132,14 +140,14 @@ public class Drawler extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (id == R.id.nav_camera) {
-            fragmentManager.beginTransaction().replace(R.id.contenedor, new ImportFragment()).commit();
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new CestaCompraFragment()).commit();
         } else if (id == R.id.nav_gallery) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new GalleryFragment()).commit();
 
         } else if (id == R.id.nav_slideshow) {
-            fragmentManager.beginTransaction().replace(R.id.contenedor, new SlideshowFragment()).commit();
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new MisRecetasFragment()).commit();
         } else if (id == R.id.nav_manage) {
-            fragmentManager.beginTransaction().replace(R.id.contenedor, new ToolsFragment()).commit();
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new MiPerfilFragment()).commit();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -182,7 +190,13 @@ public class Drawler extends AppCompatActivity
         int resourceId = mContext.getResources().getIdentifier(name, "Kitch", mContext.getPackageName());
         return mContext.getResources().getDrawable(resourceId);
     }
+    public SweetAlertDialog mostrarMensaje(String mensaje){
 
+        SweetAlertDialog nuevo= new SweetAlertDialog(getApplicationContext())
+                .setTitleText(mensaje);
+        return  nuevo;
+
+    }
 
 
 }

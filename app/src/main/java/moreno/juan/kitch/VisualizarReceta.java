@@ -34,6 +34,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
+import com.iamhabib.easy_preference.EasyPreference;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -41,9 +42,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import moreno.juan.kitch.controlador.RecyclerViewAdaptor;
 import moreno.juan.kitch.controlador.RecyclerViewComentarios;
 import moreno.juan.kitch.controlador.Utils;
+import moreno.juan.kitch.fragments.CestaCompraFragment;
 import moreno.juan.kitch.modelo.Comentario;
 import moreno.juan.kitch.modelo.Receta;
 
@@ -72,8 +75,9 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
     Task<Void> messageRef;
     private DocumentReference mDatabaseRef;
     FirebaseFirestore db;
+    private ImageView btn_like;
+    private ImageView btn_cesta;
 
-    WriteBatch batch;
 
 
 
@@ -94,11 +98,15 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
         foto_receta_vista =(ImageView)findViewById(R.id.imagen_foto_receta_vista);
         puntuacion_receta_comentario=(RatingBar)findViewById(R.id.rating_puntuacion_nuevareceta);
         btn_enviar_comentario=(Button)findViewById(R.id.btn_enviar_comentario);
+        btn_like=(ImageView) findViewById(R.id.btn_like);
+        btn_cesta=(ImageView)findViewById(R.id.btn_cesta);
+
+
 
 
 
         db = FirebaseFirestore.getInstance();
-        batch=db.batch();
+
         auth= FirebaseAuth.getInstance();
 
 
@@ -110,6 +118,8 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
         }
 
         btn_enviar_comentario.setOnClickListener(this);
+        btn_cesta.setOnClickListener(this);
+        btn_like.setOnClickListener(this);
 
         mLayoutManager = new LinearLayoutManager(this);
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -126,32 +136,34 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
 
         //
 
-        db.collection(Utils.FIREBASE_BDD_RECETAS).document(receta_visualizada.getId().toString()).collection(Utils.FIREBASE_BDD_COMENTARIOS)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            //listComentarios.removeAll(listComentarios);
-                            for (DocumentSnapshot document : task.getResult()) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
+ //       db.collection(Utils.FIREBASE_BDD_RECETAS).document(receta_visualizada.getId().toString()).collection(Utils.FIREBASE_BDD_COMENTARIOS)
+ //               .get()
+ //               .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+ //                   @Override
+ //                   public void onComplete(@NonNull Task<QuerySnapshot> task) {
+ //                       if (task.isSuccessful()) {
+ //                           //listComentarios.removeAll(listComentarios);
+ //                           for (DocumentSnapshot document : task.getResult()) {
+ //                               Log.d(TAG, document.getId() + " => " + document.getData());
+//
+ //                               // convert document to POJO
+//
+ //                               Comentario comentario = document.toObject(Comentario.class);
+//
+ //                             //  listComentarios.add(comentario);
+//
+//
+//
+ //                           }
+//
+ //                       } else {
+ //                           Log.w(TAG, "Error al recoger datos.", task.getException());
+ //                       }
+ //                   }
+ //               });
+//
 
-                                // convert document to POJO
-
-                                Comentario comentario = document.toObject(Comentario.class);
-
-                                listComentarios.add(comentario);
-
-
-
-                            }
-
-                        } else {
-                            Log.w(TAG, "Error al recoger datos.", task.getException());
-                        }
-                    }
-                });
-
+        foto_receta_vista.requestFocus();
 
 
     }
@@ -163,6 +175,10 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
         switch (v.getId()){
             case R.id.btn_enviar_comentario:
                 enviarComentario();
+                break;
+            case R.id.btn_cesta:
+                cargarCesta();
+                break;
 
 
         }
@@ -170,7 +186,20 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
 
 
 
+public void cargarCesta(){
 
+
+
+    EasyPreference.with(this).addString("cesta",receta_visualizada.getS_ingredientes());
+
+    CestaCompraFragment.lista_compra+=receta_visualizada.getS_ingredientes().toString();
+
+
+    mostrarMensaje("Ingredientes añadidos a la lista de compra","Cesta actualizada").show();
+
+
+
+}
 
     public void enviarComentario(){
 
@@ -186,27 +215,20 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
             mensaje.setNombre_usuario(auth.getCurrentUser().getDisplayName());
             mensaje.setF_nota_receta(puntuacion_receta_comentario.getRating());
             mensaje.setS_mensaje(escribir_nuevo_comentario.getText().toString());
+            DatabaseReference f=FirebaseDatabase.getInstance().getReference("recetas");
 
-            HashMap<String,Object>coment=new HashMap<>();
+            Map<String, Object> updateMap = new HashMap();
+            updateMap.put("comentarios", mensaje);
 
-            coment.put("comentarios",mensaje);
+
+
 
             // Get a new write batch
-            mDatabaseRef= db.collection("recetas").document(receta_visualizada.getId());
+            FirebaseFirestore.getInstance().collection("recetas")
+                    .document(receta_visualizada.getId().toString()).update(updateMap);
 
-            mDatabaseRef.update("comentarios",receta_visualizada.getComentarios().values()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
-                        crearToast("Mensaje enviado");
 
-                    }
-                    else{
-                        crearToast("Algo salio mal...");
 
-                    }
-                }
-            });
 
 
         }
@@ -237,28 +259,25 @@ public class VisualizarReceta extends AppCompatActivity implements View.OnClickL
 
     }
 
-    private Task<Void> addMensaje(final DocumentReference restaurantRef, final Comentario mensaje) {
-        // Create reference for new rating, for use inside the transaction
-        final DocumentReference ratingRef = restaurantRef.collection(Utils.FIREBASE_BDD_COMENTARIOS).document();
 
-        // In a transaction, add the new rating and update the aggregate totals
-        return db.runTransaction(new Transaction.Function<Void>() {
-            @Override
-            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
-                Receta receta = transaction.get(restaurantRef).toObject(Receta.class);
+    public SweetAlertDialog mostrarMensaje(String titulo,String mensaje){
+
+        SweetAlertDialog nuevo=new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText(titulo)
+                .setContentText(mensaje);
+
+        return  nuevo;
+
+    }
 
 
+    public SweetAlertDialog warningMensaje(String titulo, String contexto, String texto_confirmacion){
 
-                // Update restaurant
-                transaction.set(restaurantRef, receta);
+        SweetAlertDialog nuevo=new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText(titulo)
+                .setContentText(contexto)
+                .setConfirmText(texto_confirmacion);
 
-                // Update rating
-                Map<String, Object> data = new HashMap<>();
-                data.put("comentarios", mensaje);
-                transaction.set(ratingRef, data, SetOptions.merge());
-
-                return null;
-            }
-        });
+        return  nuevo;
     }
 }

@@ -28,7 +28,7 @@ public class RecyclerViewComentarios  extends RecyclerView.Adapter<RecyclerViewC
 
         this.comentarios=new ArrayList<>();
 
-        this.comentarios.addAll(receta.getComentarios().values());
+        this.comentarios.addAll(receta.getComentarios());
 
     }
 

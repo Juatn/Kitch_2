@@ -6,21 +6,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,60 +23,50 @@ import java.util.List;
 import moreno.juan.kitch.R;
 import moreno.juan.kitch.VisualizarReceta;
 import moreno.juan.kitch.controlador.RecyclerViewAdaptor;
-import moreno.juan.kitch.controlador.RecyclerViewCategorias;
-import moreno.juan.kitch.controlador.Utils;
-import moreno.juan.kitch.modelo.Categoria;
 import moreno.juan.kitch.modelo.Receta;
 
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
-public class Tab_CategoriasFragment extends Fragment {
+public class MisRecetasFragment extends Fragment {
 
-    private View rootView;
-    private LinearLayoutManager mLayoutManager;
-    private RecyclerView recyclerViewCategorias;
-    private RecyclerViewCategorias adaptador_categorias;
-    private List<Categoria>categorias;
+    private RecyclerView recyclerViewRecetas;
+    private RecyclerViewAdaptor adaptador_recetas;
+    LinearLayoutManager mLayoutManager;
+    View rootView;
+    FirebaseAuth mAuth;
+    private List<Receta>misRecetas;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
-
-
-        rootView= inflater.inflate(R.layout.fragment_categorias, container, false);
-        categorias=new ArrayList<Categoria>();
-
+        rootView = inflater.inflate(R.layout.fragment_slideshow, container, false);
+        mAuth=FirebaseAuth.getInstance();
 
 
 
 
         // Inflate the layout for this fragment
         return rootView;
-
-
-
-
-
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mLayoutManager = new GridLayoutManager(rootView.getContext().getApplicationContext(),2);
+        misRecetas=new ArrayList<Receta>();
+        mAuth=FirebaseAuth.getInstance();
+        rellenarMisRecetas();
+        mLayoutManager = new LinearLayoutManager(getActivity());
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        categorias=new ArrayList<>();
 
-        cargarCategorias();
 
-        recyclerViewCategorias = (RecyclerView) view.findViewById(R.id.recicler_categorias);
-        recyclerViewCategorias.setItemAnimator(new DefaultItemAnimator());
-        recyclerViewCategorias.setLayoutManager(mLayoutManager);
 
-        adaptador_categorias = new RecyclerViewCategorias(categorias);
-        recyclerViewCategorias.setAdapter(adaptador_categorias);
+        recyclerViewRecetas = (RecyclerView) view.findViewById(R.id.recicler_mis_recetas);
+
+        recyclerViewRecetas.setLayoutManager(mLayoutManager);
+        recyclerViewRecetas.setItemAnimator(new DefaultItemAnimator());
+        adaptador_recetas = new RecyclerViewAdaptor(misRecetas);
+        recyclerViewRecetas.setAdapter(adaptador_recetas);
 
         final GestureDetector mGestureDetector = new GestureDetector(rootView.getContext().getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override public boolean onSingleTapUp(MotionEvent e) {
@@ -89,7 +74,7 @@ public class Tab_CategoriasFragment extends Fragment {
             }
         });
 
-        recyclerViewCategorias.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+        recyclerViewRecetas.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             @Override
             public void onRequestDisallowInterceptTouchEvent(boolean b) {
 
@@ -102,7 +87,10 @@ public class Tab_CategoriasFragment extends Fragment {
 
                     if (child != null && mGestureDetector.onTouchEvent(motionEvent)) {
 
-
+                        int position = recyclerView.getChildAdapterPosition(child);
+                        // puede petar try catch
+                        VisualizarReceta.receta_visualizada=misRecetas.get(position);
+                        startActivity(new Intent(rootView.getContext().getApplicationContext(),VisualizarReceta.class));
 
                         return true;
                     }
@@ -117,29 +105,18 @@ public class Tab_CategoriasFragment extends Fragment {
             public void onTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
 
             }
+
         });
-
-
-
     }
-    public void cargarCategorias(){
+    public void rellenarMisRecetas() {
 
-        Categoria bebida=new Categoria(R.drawable.bebidas,"Bebidas");
-        Categoria carnes=new Categoria(R.drawable.carnes,"Carnes");
-        Categoria ensaladas=new Categoria(R.drawable.ensalada,"Ensaladas");
-        Categoria marisco=new Categoria(R.drawable.pescado_marisco,"Pescado y marisco");
-        Categoria postres=new Categoria(R.drawable.postres,"Postres");
-        Categoria arroces_y_pasta=new Categoria(R.drawable.arroces,"Arroces y Pasta");
+        if (mAuth.getCurrentUser() != null) {
 
-
-        categorias.add(carnes);
-        categorias.add(ensaladas);
-        categorias.add(marisco);
-        categorias.add(arroces_y_pasta);
-        categorias.add(postres);
-        categorias.add(bebida);
-
-
+            for (Receta c : Tab_RecetasFragment.recetas) {
+                if (c.getEmail_usuario().equals(mAuth.getCurrentUser().getEmail())) {
+                    misRecetas.add(c);
+                }
+            }
+        }
     }
-    }
-
+}

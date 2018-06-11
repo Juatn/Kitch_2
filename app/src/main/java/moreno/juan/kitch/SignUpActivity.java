@@ -18,6 +18,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.squareup.picasso.Picasso;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener{
 
     EditText editTextEmail,editTextPassword;
@@ -71,11 +73,14 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressBar.setVisibility(View.GONE);
                 if(task.isSuccessful()){
-                    Toast.makeText(getApplicationContext(),"Registrado con exito",Toast.LENGTH_SHORT).show();
+                    mostrarMensaje("Registrado con exito").show();
+                    //Toast.makeText(getApplicationContext(),"Registrado con exito",Toast.LENGTH_SHORT).show();
 
                 }else{
                    if(task.getException()instanceof FirebaseAuthUserCollisionException){
-                       Toast.makeText(getApplicationContext(),"Ya estas registrado",Toast.LENGTH_SHORT).show();
+                       warningMensaje("Ha ocurrido un error","Ya estabas registrado","Vale").show();
+                      // Toast.makeText(getApplicationContext(),"Ya estas registrado",Toast.LENGTH_SHORT).show();
+
                    }
                    else{
                        Toast.makeText(getApplicationContext(),task.getException().getMessage(),Toast.LENGTH_SHORT).show();
@@ -99,5 +104,21 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 startActivity(new Intent(this, MainActivity.class));
                 break;
         }
+    }
+    public SweetAlertDialog mostrarMensaje(String mensaje){
+
+       SweetAlertDialog nuevo= new SweetAlertDialog(this)
+                .setTitleText(mensaje);
+       return  nuevo;
+
+    }
+    public SweetAlertDialog warningMensaje(String titulo, String contexto, String texto_confirmacion){
+
+        SweetAlertDialog nuevo=new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText(titulo)
+                .setContentText(contexto)
+                .setConfirmText(texto_confirmacion);
+
+        return  nuevo;
     }
 }

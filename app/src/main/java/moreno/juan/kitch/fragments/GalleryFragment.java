@@ -34,7 +34,7 @@ public class GalleryFragment extends Fragment {
         tabs =new TabLayout(getActivity());
 
 
-        tabs.setTabTextColors(Color.parseColor("#FFFFFF"),Color.parseColor("#FFFFFF"));
+        tabs.setTabTextColors(Color.parseColor("#D78E7D"),Color.parseColor("#D78E7D"));
         appBar.addView(tabs);
         viewPager=(ViewPager)view.findViewById(R.id.pager);
         ViewPageAdapter pageAdapter =new ViewPageAdapter(getFragmentManager());

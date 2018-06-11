@@ -1,7 +1,7 @@
 package moreno.juan.kitch.modelo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by juana on 29/03/2018.
@@ -17,7 +17,7 @@ public class Receta {
     private boolean b_favorita =false;
     private float puntuacion;
     private String creador_receta;
-    private HashMap<String,Comentario>comentarios;
+    private List<Comentario> comentarios;
     private ArrayList<Float>valoraciones;
     private String id;
     private String email_usuario;
@@ -34,14 +34,14 @@ public class Receta {
        this.id=id;
 
        valoraciones=new ArrayList<Float>();
-       comentarios= new HashMap<>();
+       comentarios= new ArrayList<Comentario>();
 
 
    }
     public Receta(){
 
         valoraciones=new ArrayList<Float>();
-        comentarios= new HashMap<String, Comentario>();
+        comentarios= new ArrayList<Comentario>();
 
         valoraciones.add(4f);
 
@@ -120,11 +120,11 @@ public class Receta {
         this.b_favorita = b_favorita;
     }
 
-    public HashMap<String, Comentario> getComentarios() {
+    public List<Comentario> getComentarios() {
         return comentarios;
     }
 
-    public void setComentarios(HashMap<String, Comentario> comentarios) {
+    public void setComentarios(List<Comentario> comentarios) {
         this.comentarios = comentarios;
     }
 
