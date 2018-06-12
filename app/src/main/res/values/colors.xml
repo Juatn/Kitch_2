@@ -2,11 +2,12 @@
 <resources>
     <color name="colorPrimary">#FAE187</color>
     <color name="colorPrimaryDark">#C5D084</color>
-    <color name="colorAccent">#000000</color>
+    <color name="colorAccent">#92BBF4</color>
     <color name="red_press">#f7d8c3</color>
     <color name="marron">#f7d8c3</color>
+    <color name="amarillo">#d6bf1d</color>
 
 
 
-z
+
 </resources>

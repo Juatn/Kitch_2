@@ -1,5 +1,6 @@
 package moreno.juan.kitch.controlador;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
@@ -10,6 +11,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import moreno.juan.kitch.modelo.Receta;
 import moreno.juan.kitch.modelo.Usuario;
 
@@ -98,4 +100,14 @@ public class Utils {
 
 
     }
+    public static SweetAlertDialog mostrarMensaje(String mensaje,Context context){
+
+        SweetAlertDialog nuevo=new SweetAlertDialog(context, SweetAlertDialog.NORMAL_TYPE)
+
+                .setContentText(mensaje);
+
+        return  nuevo;
+
+    }
+
 }

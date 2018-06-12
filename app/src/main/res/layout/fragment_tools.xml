@@ -96,7 +96,7 @@
             android:background="@drawable/rounded_button_solid"
             android:text="Guardar Cambios"
             android:textAlignment="center"
-            android:textColor="@color/colorPrimaryDark" />
+            android:textColor="@color/sweet_dialog_bg_color_dark" />
 
     </LinearLayout>
 </FrameLayout>

@@ -24,7 +24,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="78dp"
-            app:civ_border_color="#FF000000"
+            app:civ_border_color="@color/success_stroke_color"
             app:civ_border_width="2dp" />
 
 
@@ -34,17 +34,18 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
-            android:textColor="@color/colorPrimaryDark"
             android:layout_marginBottom="27dp"
             android:paddingTop="@dimen/nav_header_vertical_spacing"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="#92BBF4" />
 
         <TextView
             android:id="@+id/txt_email_usuario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused" />
     </RelativeLayout>
 
 </LinearLayout>

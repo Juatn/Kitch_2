@@ -9,31 +9,20 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import moreno.juan.kitch.R;
-import moreno.juan.kitch.VisualizarReceta;
-import moreno.juan.kitch.controlador.RecyclerViewAdaptor;
+import moreno.juan.kitch.VisualizarCategoria;
 import moreno.juan.kitch.controlador.RecyclerViewCategorias;
-import moreno.juan.kitch.controlador.Utils;
 import moreno.juan.kitch.modelo.Categoria;
 import moreno.juan.kitch.modelo.Receta;
-
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 public class Tab_CategoriasFragment extends Fragment {
 
@@ -41,7 +30,7 @@ public class Tab_CategoriasFragment extends Fragment {
     private LinearLayoutManager mLayoutManager;
     private RecyclerView recyclerViewCategorias;
     private RecyclerViewCategorias adaptador_categorias;
-    private List<Categoria>categorias;
+    private List<Categoria> categorias;
 
 
     @Override
@@ -49,20 +38,12 @@ public class Tab_CategoriasFragment extends Fragment {
                              Bundle savedInstanceState) {
 
 
-
-
-        rootView= inflater.inflate(R.layout.fragment_categorias, container, false);
-        categorias=new ArrayList<Categoria>();
-
-
-
+        rootView = inflater.inflate(R.layout.fragment_categorias, container, false);
+        categorias = new ArrayList<Categoria>();
 
 
         // Inflate the layout for this fragment
         return rootView;
-
-
-
 
 
     }
@@ -70,9 +51,9 @@ public class Tab_CategoriasFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mLayoutManager = new GridLayoutManager(rootView.getContext().getApplicationContext(),2);
+        mLayoutManager = new GridLayoutManager(rootView.getContext().getApplicationContext(), 2);
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        categorias=new ArrayList<>();
+        categorias = new ArrayList<>();
 
         cargarCategorias();
 
@@ -84,7 +65,8 @@ public class Tab_CategoriasFragment extends Fragment {
         recyclerViewCategorias.setAdapter(adaptador_categorias);
 
         final GestureDetector mGestureDetector = new GestureDetector(rootView.getContext().getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
-            @Override public boolean onSingleTapUp(MotionEvent e) {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
                 return true;
             }
         });
@@ -102,11 +84,17 @@ public class Tab_CategoriasFragment extends Fragment {
 
                     if (child != null && mGestureDetector.onTouchEvent(motionEvent)) {
 
+                        int position = recyclerView.getChildAdapterPosition(child);
+                        // puede petar try catch
+                        VisualizarCategoria.categoria_seleccionada = categorias.get(position);
+
+
+                        startActivity(new Intent(rootView.getContext().getApplicationContext(), VisualizarCategoria.class));
 
 
                         return true;
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -120,18 +108,33 @@ public class Tab_CategoriasFragment extends Fragment {
         });
 
 
-
     }
-    public void cargarCategorias(){
 
-        Categoria bebida=new Categoria(R.drawable.bebidas,"Bebidas");
-        Categoria carnes=new Categoria(R.drawable.carnes,"Carnes");
-        Categoria ensaladas=new Categoria(R.drawable.ensalada,"Ensaladas");
-        Categoria marisco=new Categoria(R.drawable.pescado_marisco,"Pescado y marisco");
-        Categoria postres=new Categoria(R.drawable.postres,"Postres");
-        Categoria arroces_y_pasta=new Categoria(R.drawable.arroces,"Arroces y Pasta");
+    public void cargarCategorias() {
 
+        Categoria bebida = new Categoria(R.drawable.bebidas, "Bebidas");
+        Categoria carnes = new Categoria(R.drawable.carnes, "Carnes");
+        Categoria ensaladas = new Categoria(R.drawable.ensalada, "Ensaladas");
+        Categoria marisco = new Categoria(R.drawable.pescado_marisco, "Pescado y marisco");
+        Categoria postres = new Categoria(R.drawable.postres, "Postres");
+        Categoria arroces_y_pasta = new Categoria(R.drawable.arroces, "Arroces y Pasta");
 
+        //Rellenamos los arraylist
+        for (Receta c : Tab_RecetasFragment.recetas) {
+            if (c.getS_categoria().equals("Bebidas")) {
+                bebida.getRecetas().add(c);
+            } else if (c.getS_categoria().equals("Carnes")) {
+                carnes.getRecetas().add(c);
+            } else if (c.getS_categoria().equals("Postres")) {
+                postres.getRecetas().add(c);
+            } else if (c.getS_categoria().equals("Ensaladas")) {
+                ensaladas.getRecetas().add(c);
+            } else if (c.getS_categoria().equals("Arroces y Pasta")) {
+                arroces_y_pasta.getRecetas().add(c);
+            } else {
+                marisco.getRecetas().add(c);
+            }
+        }
         categorias.add(carnes);
         categorias.add(ensaladas);
         categorias.add(marisco);
@@ -141,5 +144,12 @@ public class Tab_CategoriasFragment extends Fragment {
 
 
     }
-    }
+
+
+}
+
+
+
+
+
 

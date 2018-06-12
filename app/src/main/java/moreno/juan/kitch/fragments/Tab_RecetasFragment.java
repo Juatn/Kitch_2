@@ -14,22 +14,22 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import moreno.juan.kitch.CrearReceta;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import moreno.juan.kitch.R;
 import moreno.juan.kitch.VisualizarReceta;
 import moreno.juan.kitch.controlador.RecyclerViewAdaptor;
+import moreno.juan.kitch.controlador.Utils;
+import moreno.juan.kitch.modelo.Comentario;
 import moreno.juan.kitch.modelo.Receta;
 
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
@@ -40,23 +40,23 @@ public class Tab_RecetasFragment extends Fragment {
     private RecyclerView recyclerViewRecetas;
     private RecyclerViewAdaptor adaptador_recetas;
     LinearLayoutManager mLayoutManager;
-    public static List<Receta> recetas=new ArrayList<Receta>();
+    public static List<Receta> recetas = new ArrayList<Receta>();
     View rootView;
     FirebaseFirestore db;
-
+    Receta nueva;
+    public List<Comentario> comentarios;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-       // recyclerViewRecetas=(RecyclerView)container.findViewById(R.id.recyclerRecetas);
-       // recyclerViewRecetas.setLayoutManager(new LinearLayoutManager(getContext()));
+        // recyclerViewRecetas=(RecyclerView)container.findViewById(R.id.recyclerRecetas);
+        // recyclerViewRecetas.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //adaptador_recetas= new RecyclerViewAdaptor(obtenerRecetas());
 
         rootView = inflater.inflate(R.layout.fragment_recetas, container, false);
         rootView.setTag(TAG);
-
 
 
         return inflater.inflate(R.layout.fragment_recetas, container, false);
@@ -68,6 +68,7 @@ public class Tab_RecetasFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
+        comentarios = new ArrayList<>();
 
         recyclerViewRecetas = (RecyclerView) view.findViewById(R.id.recyclerRecetas);
         recyclerViewRecetas.setItemAnimator(new DefaultItemAnimator());
@@ -77,7 +78,8 @@ public class Tab_RecetasFragment extends Fragment {
         recyclerViewRecetas.setAdapter(adaptador_recetas);
 
         final GestureDetector mGestureDetector = new GestureDetector(rootView.getContext().getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
-            @Override public boolean onSingleTapUp(MotionEvent e) {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
                 return true;
             }
         });
@@ -96,17 +98,20 @@ public class Tab_RecetasFragment extends Fragment {
                     if (child != null && mGestureDetector.onTouchEvent(motionEvent)) {
 
                         int position = recyclerView.getChildAdapterPosition(child);
-                          // puede petar try catch
-                        VisualizarReceta.receta_visualizada=recetas.get(position);
-                        startActivity(new Intent(rootView.getContext().getApplicationContext(),VisualizarReceta.class));
+                        // puede petar try catch
+                        VisualizarReceta.receta_visualizada = recetas.get(position);
+                        warningMensaje("asd","funciona","a");
+                        startActivity(new Intent(rootView.getContext().getApplicationContext(), VisualizarReceta.class));
 
                         return true;
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
+                    warningMensaje("asd","NOOOOOOOOfunciona","a");
                 }
 
                 return false;
+
             }
 
             @Override
@@ -128,13 +133,11 @@ public class Tab_RecetasFragment extends Fragment {
                             for (DocumentSnapshot document : task.getResult()) {
                                 Log.d(TAG, document.getId() + " => " + document.getData());
 
-                                    // convert document to POJO
+                                // convert document to POJO
 
-                                    Receta receta = document.toObject(Receta.class);
+                                nueva = document.toObject(Receta.class);
 
-                                    recetas.add(receta);
-
-
+                                recetas.add(nueva);
 
 
                             }
@@ -154,5 +157,58 @@ public class Tab_RecetasFragment extends Fragment {
     }
 
 
+    public void pp() {
+
+        db.collection(Utils.FIREBASE_BDD_RECETAS).document(nueva.getId().toString()).collection(Utils.FIREBASE_BDD_COMENTARIOS)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            //listComentarios.removeAll(listComentarios);
+
+                            for (DocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+
+                                // convert document to POJO
+
+
+                                Comentario comentario = document.toObject(Comentario.class);
+
+
+                                comentarios.add(comentario);
+
+                                float nota = 0f;
+                                for (Comentario c : comentarios) {
+
+                                    nota += c.getF_nota_receta();
+                                }
+                                float notafinal = nota / comentarios.size();
+                                nueva.setPuntuacion(notafinal);
+                                db.collection(Utils.FIREBASE_BDD_RECETAS).document().update("puntuacion", notafinal);
+
+
+                            }
+
+                        } else {
+                            Log.w(TAG, "Error al recoger datos.", task.getException());
+                        }
+                    }
+                });
+
+    }
+    public SweetAlertDialog warningMensaje(String titulo, String contexto, String texto_confirmacion) {
+
+        SweetAlertDialog nuevo = new SweetAlertDialog(rootView.getContext(), SweetAlertDialog.ERROR_TYPE)
+                .setTitleText(titulo)
+                .setContentText(contexto)
+                .setConfirmText(texto_confirmacion);
+
+        return nuevo;
+    }
 
 }
+
+
+
+

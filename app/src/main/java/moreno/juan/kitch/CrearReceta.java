@@ -166,7 +166,7 @@ public class CrearReceta extends AppCompatActivity implements View.OnClickListen
                                 }
                             }, 500);
 
-                           mostrarMensaje("Receta creada con exito").show();
+                           mostrarMensaje("Receta creada").show();
                             // Se crea una instancia de la clase receta
                            Receta upload = new Receta();
                            upload.setS_nombre(txt_nombre_receta.getText().toString());

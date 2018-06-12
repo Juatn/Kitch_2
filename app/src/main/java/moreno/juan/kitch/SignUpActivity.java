@@ -1,9 +1,9 @@
 package moreno.juan.kitch;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
@@ -20,9 +20,9 @@ import com.squareup.picasso.Picasso;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class SignUpActivity extends AppCompatActivity implements View.OnClickListener{
+public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
-    EditText editTextEmail,editTextPassword;
+    EditText editTextEmail, editTextPassword;
     ProgressBar progressBar;
     private FirebaseAuth mAuth;
     private ImageView logo;
@@ -31,31 +31,31 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-        editTextEmail=(EditText)findViewById(R.id.editTextEmail);
-        logo=(ImageView)findViewById(R.id.logo_app_sign);
-        editTextPassword=(EditText)findViewById(R.id.editTextPassword);
-        progressBar=(ProgressBar)findViewById(R.id.progressbar);
+        editTextEmail = (EditText) findViewById(R.id.editTextEmail);
+        logo = (ImageView) findViewById(R.id.logo_app_sign);
+        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
+        progressBar = (ProgressBar) findViewById(R.id.progressbar);
         mAuth = FirebaseAuth.getInstance();
         findViewById(R.id.buttonSignUp).setOnClickListener(this);
         findViewById(R.id.textViewLogin).setOnClickListener(this);
         Picasso.get().load(R.drawable.logo).into(logo);
     }
 
-    private void registerUser(){
-        String email= editTextEmail.getText().toString().trim();
-        String password=editTextPassword.getText().toString().trim();
+    private void registerUser() {
+        String email = editTextEmail.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
 
-        if(email.isEmpty()){
+        if (email.isEmpty()) {
             editTextEmail.setError("El correo esta vacio");
             editTextEmail.requestFocus();
             return;
         }
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             editTextEmail.setError("Por favor, ingresa un correo valido");
             editTextEmail.requestFocus();
             return;
         }
-        if(password.isEmpty()){
+        if (password.isEmpty()) {
             editTextPassword.setError("La contraseña esta vacia");
             editTextPassword.requestFocus();
             return;
@@ -68,23 +68,22 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         progressBar.setVisibility(View.VISIBLE);
-        mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressBar.setVisibility(View.GONE);
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     mostrarMensaje("Registrado con exito").show();
                     //Toast.makeText(getApplicationContext(),"Registrado con exito",Toast.LENGTH_SHORT).show();
 
-                }else{
-                   if(task.getException()instanceof FirebaseAuthUserCollisionException){
-                       warningMensaje("Ha ocurrido un error","Ya estabas registrado","Vale").show();
-                      // Toast.makeText(getApplicationContext(),"Ya estas registrado",Toast.LENGTH_SHORT).show();
+                } else {
+                    if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                        warningMensaje("Ha ocurrido un error", "Ya estabas registrado", "Vale").show();
 
-                   }
-                   else{
-                       Toast.makeText(getApplicationContext(),task.getException().getMessage(),Toast.LENGTH_SHORT).show();
-                   }
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -94,7 +93,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.buttonSignUp:
                 registerUser();
                 break;
@@ -105,20 +104,22 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 break;
         }
     }
-    public SweetAlertDialog mostrarMensaje(String mensaje){
 
-       SweetAlertDialog nuevo= new SweetAlertDialog(this)
+    public SweetAlertDialog mostrarMensaje(String mensaje) {
+
+        SweetAlertDialog nuevo = new SweetAlertDialog(this)
                 .setTitleText(mensaje);
-       return  nuevo;
+        return nuevo;
 
     }
-    public SweetAlertDialog warningMensaje(String titulo, String contexto, String texto_confirmacion){
 
-        SweetAlertDialog nuevo=new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+    public SweetAlertDialog warningMensaje(String titulo, String contexto, String texto_confirmacion) {
+
+        SweetAlertDialog nuevo = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
                 .setTitleText(titulo)
                 .setContentText(contexto)
                 .setConfirmText(texto_confirmacion);
 
-        return  nuevo;
+        return nuevo;
     }
 }

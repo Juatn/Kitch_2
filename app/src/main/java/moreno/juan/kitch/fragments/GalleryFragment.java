@@ -24,7 +24,7 @@ public class GalleryFragment extends Fragment {
     private AppBarLayout appBar;
     private TabLayout tabs;
     private ViewPager viewPager;
-    String[] tituloTabs = {"RECETAS","CATEGORIAS","TOP RECETAS"};
+    String[] tituloTabs = {"RECETAS","CATEGORIAS"};
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -35,6 +35,7 @@ public class GalleryFragment extends Fragment {
 
 
         tabs.setTabTextColors(Color.parseColor("#D78E7D"),Color.parseColor("#D78E7D"));
+
         appBar.addView(tabs);
         viewPager=(ViewPager)view.findViewById(R.id.pager);
         ViewPageAdapter pageAdapter =new ViewPageAdapter(getFragmentManager());
@@ -67,14 +68,14 @@ public class GalleryFragment extends Fragment {
             switch (position){
                 case 0:return new Tab_RecetasFragment();
                 case 1: return new Tab_CategoriasFragment();
-                case 2: return new Tab_PruebaFragment();
+                //case 2: return new Tab_PruebaFragment();
             }
             return null;
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
 
 

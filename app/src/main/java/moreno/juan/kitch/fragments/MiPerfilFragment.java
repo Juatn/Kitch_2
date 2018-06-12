@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ import java.io.IOException;
 import moreno.juan.kitch.Drawler;
 import moreno.juan.kitch.ProfileActivity;
 import moreno.juan.kitch.R;
+import moreno.juan.kitch.controlador.Utils;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -46,7 +48,7 @@ public class MiPerfilFragment extends Fragment {
     private Uri uriProfileImage;
     private String profileImageUrl;
     FirebaseUser user;
-    private View view;
+     View view;
 
 
     @Override
@@ -56,6 +58,14 @@ public class MiPerfilFragment extends Fragment {
 
         view=inflater.inflate(R.layout.fragment_tools, container, false);
 
+
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         text_email_usuario =(EditText) view.findViewById(R.id.editText_email_usuario_ajustes);
         text_nombre_usuario = (EditText) view.findViewById(R.id.editText_nombre_usuario_ajustes);
         password =(EditText) view.findViewById(R.id.editText_password_ususario_ajustes);
@@ -84,13 +94,21 @@ public class MiPerfilFragment extends Fragment {
 
 
 
-                    user.updateProfile(profile)
+                    user.updateProfile(profile).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Utils.mostrarMensaje("Perfil actualizado",view.getContext().getApplicationContext());
+                            Intent intent = new Intent(view.getContext().getApplicationContext(), Drawler.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
+                    })
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        Toast.makeText(view.getContext(), "Perfil Actualizado", Toast.LENGTH_SHORT).show();
 
+                                        Utils.mostrarMensaje("Perfil actualizado",view.getContext().getApplicationContext());
                                         Intent intent = new Intent(view.getContext().getApplicationContext(), Drawler.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         startActivity(intent);
@@ -110,9 +128,8 @@ public class MiPerfilFragment extends Fragment {
 
             }
         });
-
-        return view;
     }
+
     public void cargarVistaAjustes() {
         if (user != null) {
             // Name, email address, and profile photo Url
